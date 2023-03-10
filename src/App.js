@@ -15,7 +15,7 @@ function App() {
           <div className="flex flex-row justify-around">
               <p className="text-2xl">Wordle</p>
               {['1p', '2p'].map(m =>
-                  <button className={classnames("text-lg p-3", {'bg-emerald-200':mode===m})}
+                  <button key={m} className={classnames("text-lg p-3", {'bg-emerald-200':mode===m})}
                           onClick={()=>setMode(m)}
                           disabled={mode===m}>
                       {m}

@@ -1,5 +1,5 @@
 import useLocalStorageState from "use-local-storage-state";
-import {useCallback, useState} from "react";
+import {useCallback, useMemo, useState} from "react";
 import words from './mywords.json';
 import _ from 'lodash';
 import Word from "./Word";
@@ -11,19 +11,20 @@ const OnePlayer = () => {
     const [guess, setGuess] = useState('');
     const [won, setWon] = useState(false);
 
-    console.log({guesses});
-
     const onChangeGuess = useCallback(e => {
-        setGuess(e.target.value);
+        setGuess(e.target.value.toUpperCase());
     },[setGuess] );
 
+    const possibilities = useMemo(() => {
+        return getPossibleWords(guesses);
+    }, [guesses]);
+    console.log(possibilities.map(p => p.length), 'possibilities');
 
     const onKeyDown = useCallback((e) => {
 
         const addGuess = (word, guess) => setGuesses(gs => [...gs, {
-            guess,
+            word: guess,
             hint: getHint(word, guess),
-            possibilities: getPossibleWords(gs.map(({hint}) => hint)).length,
         }]);
 
         if (e.key === 'Enter') {
@@ -35,7 +36,7 @@ const OnePlayer = () => {
                 const sameLength = _.shuffle(words.words.filter(w =>  w.length === guess.length));
                 console.log({sameLength});
                 if (sameLength.length) {
-                    setWord(sameLength[0]);
+                    setWord(sameLength[0].toUpperCase());
                     addGuess(sameLength[0], guess);
                     console.log(sameLength[0]);
                 }
@@ -56,14 +57,12 @@ const OnePlayer = () => {
         setGuesses([]);
     }
 
-    const possibleWords = getPossibleWords(guesses.map(({hint}) => hint));
-
-    return <div className="flex flex-col flex-wrap h-full items-center space-y-4">
+    return <div className="flex flex-col h-full items-center space-y-4" style={{maxHeight:'400px'}}>
         {guesses.map((g,i) =>
             <Word key={i}
-                  word={g.guess}
+                  word={g.word}
                   hint={g.hint}
-                  possibilities={won && g.possibilities}/>
+                  possibilities={won && possibilities[i]}/>
         )}
 
         <input placeholder="Enter your guess"
