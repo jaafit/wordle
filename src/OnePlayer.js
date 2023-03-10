@@ -3,7 +3,7 @@ import {useCallback, useMemo, useState} from "react";
 import words from './mywords.json';
 import _ from 'lodash';
 import Word from "./Word";
-import {getHint, getPossibleWords} from "./wordle-util";
+import {getHint, getPossibleLetters, getPossibleWords} from "./wordle-util";
 
 const OnePlayer = () => {
     const [word, setWord] = useLocalStorageState('wordle-word-1p', {defaultValue:''});
@@ -19,6 +19,10 @@ const OnePlayer = () => {
         return getPossibleWords(guesses);
     }, [guesses]);
     console.log(possibilities.map(p => p.length), 'possibilities');
+
+    const possibleLetters = useMemo(() => {
+        return getPossibleLetters(guesses);
+    }, [guesses]);
 
     const onKeyDown = useCallback((e) => {
 
@@ -72,6 +76,7 @@ const OnePlayer = () => {
                onKeyDown={onKeyDown}/>
 
         {won && <button onClick={reset} >Reset</button>}
+        {!won && <Word word={possibleLetters}/>}
 
 
     </div>

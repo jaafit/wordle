@@ -70,7 +70,6 @@ export const getPossibleWords = (guesses) => {
       return possibleWords;
     }
   );
-
 }
 //
 // const tests = [
@@ -80,4 +79,20 @@ export const getPossibleWords = (guesses) => {
 // tests.map(t =>
 //    getPossibleWords(t.guesses.map(g => ({word: g, hint: getHint(t.word, g)})))
 // )
+
+export const getPossibleLetters = (guesses) => {
+  let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  let safe = [];
+  guesses.forEach(guess => {
+    const splitGuess = guess.word.split('');
+    splitGuess.forEach((gl, i) =>
+      (guess.hint[i] === gl || guess.hint[i] === '+') && safe.push(gl)
+    );
+    splitGuess.forEach((gl, i) =>
+        guess.hint[i] === '#' && !~safe.indexOf(gl) && letters.splice(letters.indexOf(gl),1)
+    );
+  });
+  return letters.join('');
+
+}
 

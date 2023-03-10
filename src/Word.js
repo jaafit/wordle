@@ -8,7 +8,7 @@ const Word = ({word, hint, possibilities}) => {
     return <div>
 
         <div className="flex flex-row space-x-3">
-            {letters.map((l,i) => <Letter letter={l} hint={hint[i]} key={i}/>)}
+            {letters.map((l,i) => <Letter letter={l} hint={hint?.[i]} key={i}/>)}
             {possibilities &&
                 <p onClick={()=>setShowPossibilities(!showPossibilities)}>{possibilities.length} possibilities</p>}
         </div>
