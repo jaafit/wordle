@@ -18,9 +18,8 @@ const OnePlayer = () => {
     const possibilities = useMemo(() => {
         return getPossibleWords(guesses);
     }, [guesses]);
-    console.log(possibilities.map(p => p.length), 'possibilities');
 
-    const possibleLetters = useMemo(() => {
+    const [possibleLetters, possibleLettersHint] = useMemo(() => {
         return getPossibleLetters(guesses);
     }, [guesses]);
 
@@ -38,11 +37,9 @@ const OnePlayer = () => {
             if (guesses.length === 0) {
                 // find a new word
                 const sameLength = _.shuffle(words.words.filter(w =>  w.length === guess.length));
-                console.log({sameLength});
                 if (sameLength.length) {
                     setWord(sameLength[0].toUpperCase());
                     addGuess(sameLength[0], guess);
-                    console.log(sameLength[0]);
                 }
             }
             else
@@ -61,13 +58,15 @@ const OnePlayer = () => {
         setGuesses([]);
     }
 
-    return <div className="flex flex-col h-full items-center space-y-4" style={{maxHeight:'400px'}}>
+    return <div className="flex flex-col items-center space-y-2">
+        <div className="p-5 flex flex-col h-full items-center space-y-4 overflow-auto" style={{maxHeight:'600px'}}>
         {guesses.map((g,i) =>
             <Word key={i}
                   word={g.word}
                   hint={g.hint}
-                  possibilities={won && possibilities[i]}/>
+                  possibilities={won && g.word !== word && possibilities[i]}/>
         )}
+        </div>
 
         <input placeholder="Enter your guess"
                className="w-1/2 p-2"
@@ -76,7 +75,7 @@ const OnePlayer = () => {
                onKeyDown={onKeyDown}/>
 
         {won && <button onClick={reset} >Reset</button>}
-        {!won && <Word word={possibleLetters}/>}
+        {!won && <div className="px-3"><Word word={possibleLetters} hint={possibleLettersHint}/></div>}
 
 
     </div>

@@ -56,6 +56,7 @@ export const getPossibleWords = (guesses) => {
                   if (guess.hint[i] === '+') {
                     const index = unconsumed.indexOf(guess.word[i]);
                     if (!~index) {debug && console.log('no such letter'); return false;}
+                    if (guess.word[i] === word[i]) { debug && console.log('letter is here'); return false; }
                     else { unconsumed = replaceAt(unconsumed, index, ' ');
                       debug && console.log({unconsumed});
                     }
@@ -83,16 +84,23 @@ export const getPossibleWords = (guesses) => {
 export const getPossibleLetters = (guesses) => {
   let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   let safe = [];
+  let exhausted = [];
   guesses.forEach(guess => {
     const splitGuess = guess.word.split('');
     splitGuess.forEach((gl, i) =>
       (guess.hint[i] === gl || guess.hint[i] === '+') && safe.push(gl)
     );
-    splitGuess.forEach((gl, i) =>
-        guess.hint[i] === '#' && !~safe.indexOf(gl) && letters.splice(letters.indexOf(gl),1)
-    );
+    splitGuess.forEach((gl, i) => {
+        if (guess.hint[i] === '#') {
+          if (!~safe.indexOf(gl) && ~letters.indexOf(gl))
+            letters.splice(letters.indexOf(gl),1)
+          else if (~safe.indexOf(gl))
+            exhausted.push(gl)
+        }
+    });
   });
-  return letters.join('');
+  const hint = letters.map(l => ~exhausted.indexOf(l) ? '#' : l);
+  return [letters.join(''), hint.join('')];
 
 }
 
